@@ -1,33 +1,21 @@
 async function query(data) {
     const loader = document.getElementById('loader');
-    try {
-        const response = await fetch('/api/getApiKey');
-        const apiKeyData = await response.json();
-        const apiKey = apiKeyData.apiKey;
 
-        loader.innerHTML = `<img src="static/loading.gif" alt="Generated Image" id='generatedimg' style='height: 45px; width: 45px;'><p>Please Wait...</p>`;
-
-        const inferenceResponse = await fetch(
-            "https://api-inference.huggingface.co/models/Halberthj/ImageGenerator",
-            {
-                headers: { Authorization: `Bearer ${apiKey}` },
-                method: "POST",
-                body: JSON.stringify(data),
-            }
-        );
-
-        if (!inferenceResponse.ok) {
-            loader.innerHTML = `<p>Something went wrong, Try after 5 mins!</p>`;
-            throw new Error('Network response was not ok');
+    loader.innerHTML = `<img src="static/loading.gif" alt="Generated Image" id='generatedimg' style='height: 45px; width: 45px;'><p>Please Wait...</p>`;
+    const response = await fetch(
+        "https://api-inference.huggingface.co/models/Halberthj/ImageGenerator",
+        {
+            headers: { Authorization: `Bearer ${API_KEY}` },
+            method: "POST",
+            body: JSON.stringify(data),
         }
-
-        loader.innerHTML = ``;
-        return await inferenceResponse.blob();
-    } catch (error) {
-        console.error('Error:', error);
-        loader.innerHTML = `<p>Something went wrong!</p>`;
-        throw error; // Re-throw the error to the caller
+    );
+    if (!response.ok) {
+        loader.innerHTML = `<p>Something went wrong, Try after 5 mins!</p>`
+        throw new Error('Network response was not ok');
     }
+    loader.innerHTML = ``;
+    return await response.blob();
 }
 
 async function generateImage() {
@@ -54,3 +42,5 @@ async function generateImage() {
 
 // Add event listener to the button
 document.getElementById('generateButton').addEventListener('click', generateImage);
+
+
